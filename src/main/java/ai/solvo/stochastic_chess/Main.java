@@ -1,19 +1,35 @@
 package ai.solvo.stochastic_chess;
 
 
+import ch.astorm.jchess.JChessGame;
+import ch.astorm.jchess.io.MoveParser;
+import ch.astorm.jchess.util.UnicodePositionRenderer;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import java.util.List;
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        JChessGame jChessGame = JChessGame.newGame();
+        Game game = new Game(jChessGame);
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        Scanner scanner = new Scanner(System.in);
+        boolean inPlay = true;
+
+        do {
+            System.out.print("Provide move:");
+            String nextLine = scanner.nextLine();
+            try {
+                List<Status> statuses = game.move(nextLine);
+                for (Status status : statuses) {
+                    UnicodePositionRenderer.render(System.out, status.getPosition());
+                    inPlay = status.getStatus().isPlayAllowed();
+                }
+            }
+            catch (MoveParser.InvalidMoveException e) {
+                System.out.println(e.getMessage());
+            }
+
+        } while (inPlay);
     }
 }
